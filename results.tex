@@ -1,0 +1,82 @@
+\section{Experimental Setup and Evaluation}
+To evaluate the performance of ImageHarbour, we conducted experiments comparing it with three other image retrieval methods: local disk access, private registry access, and Docker Hub access. The experiments were designed to measure the latency and throughput of image retrieval under different scenarios and image sizes.
+
+\subsection{Experimental Setup}
+The experimental setup consisted of a cluster of machines connected via a high-speed network. Each machine was equipped with an Intel Xeon processor, 128 GB of RAM, and a 1 TB SSD. The machines were running Ubuntu 22.04 LTS and had Docker installed.
+
+We set up the following four systems for comparison:
+
+\begin{enumerate}
+    \item \textbf{Local Disk}: In this setup, the required Docker image was already present on the local disk of the host machine.
+    \item \textbf{Private Registry}: We deployed a private Docker registry within the same cluster as the client machines. The required Docker images were hosted on this private registry.
+    \item \textbf{Docker Hub}: The client machines fetched the required Docker images directly from Docker Hub, the public Docker image registry.
+    \item \textbf{ImageHarbour}: Our proposed ImageHarbour system was deployed on the cluster, with the control plane, memory pool, and client nodes set up according to the architecture described in Section~\ref{sec:system_design}.
+\end{enumerate}
+
+To evaluate the performance of each system under different image sizes, we selected three representative Docker images:
+
+\begin{enumerate}
+    \item \textbf{Hello-World}: A lightweight Docker image with a size of less than 1 MB. This image represents small-sized images commonly used for testing and simple applications.
+    \item \textbf{Alpine}: A popular lightweight Linux distribution image with a size of 3-4 MB. Alpine is widely used as a base image for containerized applications due to its small footprint.
+    \item \textbf{Debian}: A larger Docker image based on the Debian Linux distribution, with a size exceeding 100 MB. This image represents more substantial application images that include a full-fledged operating system and additional dependencies.
+\end{enumerate}
+
+In the following subsections, we present the results of our experiments and discuss the performance of ImageHarbour compared to the other image retrieval methods.
+
+\subsection{Results}
+
+\subsubsection{Hello-World Image}
+Table \ref{tab:hello_world_results} presents the image retrieval times for the Hello-World image across different systems.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+System & Time (us) \\
+\hline
+Disk & 130350.038 \\
+Local Registry & 150416.970 \\
+Docker Hub & 1226197.943 \\
+ImageHarbor & 16608.400 \\
+\hline
+\end{tabular}
+\caption{Image retrieval times for Hello-World image}
+\label{tab:hello_world_results}
+\end{table}
+
+Figure \ref{fig:hello_world_graph} shows a graph comparing the image retrieval times for the Hello-World image.
+
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.8\textwidth]{hello_world_graph.png}
+% \caption{Image retrieval times for Hello-World image}
+% \label{fig:hello_world_graph}
+% \end{figure}
+
+\subsubsection{Debian Image}
+Table \ref{tab:debian_results} presents the image retrieval times for the Debian image across different systems.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|}
+\hline
+System & Time (us) \\
+\hline
+Disk & 1387899.586 \\
+Local Registry & 1387751.932 \\
+Docker Hub & 3167976.727 \\
+ImageHarbor & 16608.000 \\
+\hline
+\end{tabular}
+\caption{Image retrieval times for Debian image}
+\label{tab:debian_results}
+\end{table}
+
+Figure \ref{fig:debian_graph} shows a graph comparing the image retrieval times for the Debian image.
+
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.8\textwidth]{debian_graph.png}
+% \caption{Image retrieval times for Debian image}
+% \label{fig:debian_graph}
+% \end{figure}

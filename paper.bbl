@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+
+\bibitem{gu2017efficient}
+{\sc Gu, J., Hu, Y., Zhang, T., Guo, Z., Cheng, M., Jin, X., Li, J., Dadiomov, N., Williams, K., and Ng, K.}
+\newblock Efficient memory disaggregation with infiniswap.
+\newblock In {\em 14th $\{$USENIX$\}$ Symposium on Networked Systems Design and Implementation ($\{$NSDI$\}$ 17)\/} (2017), pp.~649--667.
+
+\bibitem{harter2016slacker}
+{\sc Harter, T., Salmon, B., Liu, R., Arpaci-Dusseau, A.~C., and Arpaci-Dusseau, R.~H.}
+\newblock Slacker: Fast distribution with lazy docker containers.
+\newblock In {\em 14th USENIX Conference on File and Storage Technologies (FAST 16)\/} (2016), pp.~181--195.
+
+\bibitem{kalia2016design}
+{\sc Kalia, A., Kaminsky, M., and Andersen, D.~G.}
+\newblock Design guidelines for high performance rdma systems.
+\newblock In {\em 2016 USENIX Annual Technical Conference (USENIX ATC 16)\/} (2016), pp.~437--450.
+
+\bibitem{megiddo2003arc}
+{\sc Megiddo, N., and Modha, D.~S.}
+\newblock Arc: A self-tuning, low overhead replacement cache.
+\newblock In {\em Fast'03: 2nd USENIX Conference on File and Storage Technologies\/} (2003), pp.~115--130.
+
+\bibitem{reiss2012heterogeneity}
+{\sc Reiss, C., Wilkes, J., and Hellerstein, J.~L.}
+\newblock Heterogeneity and dynamicity of clouds at scale: Google trace analysis.
+\newblock In {\em Proceedings of the Third ACM Symposium on Cloud Computing\/} (2012), pp.~1--13.
+
+\bibitem{yang2014don}
+{\sc Yang, J., Plasson, N., Gillis, G., Talagala, N., and Sundararaman, S.}
+\newblock Don't stack your log on my log.
+\newblock In {\em 2nd Workshop on Interactions of NVM/FLASH with Operating Systems and Workloads (INFLOW)\/} (2014), vol.~71.
+
+\end{thebibliography}
