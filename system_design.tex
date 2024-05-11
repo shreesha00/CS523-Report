@@ -1,27 +1,26 @@
 \section{System Design}\label{sec:system_design}
-ImageHarbour is designed as a distributed image caching system that leverages stranded memory resources across multiple hosts in a data center. The system architecture consists of three main components: the control plane, the memory pool, and the client nodes. Figure \ref{fig:imageharbour_architecture} provides an overview of the ImageHarbour system design.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\textwidth]{flow.jpg}
+\caption{ImageHarbour system architecture}
+\label{fig:imageharbour_architecture}
+\end{figure}
+ImageHarbour is designed as a distributed image caching system that leverages stranded memory resources across multiple hosts in a data center. The system architecture consists of three main components: the image server, the memory servers, and the client nodes. Figure \ref{fig:imageharbour_architecture} provides an overview of the ImageHarbour system design. The client flow to fetch an image is as follows: Clients contact the image server to fetch a new image (step 1). The image server checks if the image is in the cache, if the image is not in the cache, it fetches the image from an image repository (steps 2-3) and stores it locally on disk (step 4). Additionally, the image server splits the image into fixed size chunks and stores the chunks on the memory servers using one-sided RDMA operations (step 5). The image server then returns a metadata response, containing the location of the chunks in the memory pool to the client (step 6). The client finally performs one-sided RDMA read operations to fetch the image data directly from the memory servers (step 7). If the image is already cached, steps 2-5 are skipped. Additionally, the clients can cache the metadata of the image to avoid contacting the image server for future requests (as opposed to caching the entire image) thereby skipping steps 1-6 for subsequent requests.
 
-\subsection{Control Plane}
-The control plane is responsible for managing the overall operation of ImageHarbour. It makes intelligent caching decisions, coordinates the allocation and deallocation of memory resources, and maintains metadata about the cached images. The control plane consists of the following subcomponents:
+\subparagraph*{\textbf{Image Server}}
+The image server is the client interface to ImageHarbour. It makes intelligent caching decisions, coordinates the allocation and deallocation of memory resources, and maintains metadata about the cached images. The image server performs the following functions:
 
-\subsubsection{Image Metadata Store}
-The image metadata store maintains information about the cached images, including their unique identifiers, sizes, access frequencies, and locations within the memory pool.
+\noindent\textit{Metadata Store.} The image server maintains information about the cached images, including their unique identifiers, sizes, access frequencies, and locations within the memory pool.
 
-\subsubsection{Caching Policy Engine}
-The caching policy engine determines which images should be cached in the memory pool and which images should be evicted when the cache reaches its capacity. It can employ algorithms, such as Least Recently Used (LRU) or Adaptive Replacement Cache (ARC) \cite{megiddo2003arc}, to make caching decisions based on factors like image popularity and access patterns.
+\noindent\textit{Caching Engine.} The image server decides which images should be cached in the memory pool and which images should be evicted when the cache reaches its capacity. It can employ algorithms, such as Least Recently Used (LRU) or Adaptive Replacement Cache (ARC) \cite{megiddo2003arc}, to make caching decisions based on factors like image popularity and access patterns.
 
-\subsubsection{Memory Allocator}
-The memory allocator manages the allocation and deallocation of memory resources within the memory pool. It keeps track of the available memory on each host and assigns memory regions to cached images based on their sizes and access frequencies.
+\noindent\textit{Memory Allocator.} The image server manages the allocation and deallocation of memory resources within the memory pool. It keeps track of the available memory on each host and assigns memory regions to cached images based on their sizes and access frequencies.
 
-\subsection{Memory Pool}
-The memory pool is a distributed cache that aggregates the stranded memory resources from multiple hosts in the data center. It serves as a high-performance storage layer for cached Docker images, allowing fast access to frequently used images.
+\subparagraph{\textbf{Memory Servers}}
+Memory servers act as passive storage nodes that provide memory resources to the memory pool managed by the image server. Each memory server registers with the image server and the image server distributes the cached images across the available memory servers. All operations to the memory servers (apart from the initial setup) are one-sided RDMA operations that do not interrupt the CPU on the memory server. 
 
-Each host in the memory pool registers with the control plane. Control plane distriutes which images to cache and performs one-sided RDMA write to the available region. It then stores meta data of that operation. When a client node requests an image, the control plane provides the location of the image in the memory pool, and the client node directly reads the image data using one-sided RDMA operations.
+\subparagraph{\textbf{Client Nodes}}
+Client nodes are the consumers of the cached Docker images. They interact with ImageHarbour to retrieve images from the memory pool instead of fetching them from disk or over the network.
 
-\subsection{Client Nodes}
-Client nodes are the consumers of the cached Docker images. They interact with ImageHarbour to retrieve images from the memory pool instead of fetching them from disk or over the network. When a client node requests an image, it first consults the control plane to obtain the location of the image in the memory pool. If the image is found in the cache, the client node establishes an RDMA connection with the appropriate host in the memory pool and directly reads the image data using one-sided RDMA operations.
-
-If the requested image is not present in the cache, the client node falls back to the traditional method of retrieving the image from disk or over the network. In such cases, the control plane may decide to cache the image in the memory pool for future requests, based on the caching policy engine's decisions.
-
-\subsection{Scalability}
+\subparagraph{\textbf{Scalability}}
 ImageHarbour is designed to scale horizontally by adding more hosts to the memory pool as the demand for cached images grows. The control plane dynamically manages the distribution of images across the memory pool hosts to achieve load balancing.

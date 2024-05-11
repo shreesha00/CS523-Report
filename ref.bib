@@ -6,12 +6,95 @@
   year={2012}
 }
 
-@inproceedings{gu2017efficient,
+@inproceedings{erpc,
+author = {Kalia, Anuj and Kaminsky, Michael and Andersen, David G.},
+title = {Datacenter RPCs can be general and fast},
+year = {2019},
+isbn = {9781931971492},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {It is commonly believed that datacenter networking software must sacrifice generality to attain high performance. The popularity of specialized distributed systems designed specifically for niche technologies such as RDMA, lossless networks, FPGAs, and programmable switches testifies to this belief. In this paper, we show that such specialization is not necessary. eRPC is a new general-purpose remote procedure call (RPC) library that offers performance comparable to specialized systems, while running on commodity CPUs in traditional datacenter networks based on either lossy Ethernet or lossless fabrics. eRPC performs well in three key metrics: message rate for small messages; bandwidth for large messages; and scalability to a large number of nodes and CPU cores. It handles packet loss, congestion, and background request execution. In microbenchmarks, one CPU core can handle up to 10 million small RPCs per second, or send large messages at 75 Gbps. We port a production-grade implementation of Raft state machine replication to eRPC without modifying the core Raft source code. We achieve 5.5 µs of replication latency on lossy Ethernet, which is faster than or comparable to specialized replication systems that use programmable switches, FPGAs, or RDMA.},
+booktitle = {Proceedings of the 16th USENIX Conference on Networked Systems Design and Implementation},
+pages = {1–16},
+numpages = {16},
+location = {Boston, MA, USA},
+series = {NSDI'19}
+}
+
+@inproceedings{Infiniswap,
   title={Efficient memory disaggregation with Infiniswap},
   author={Gu, Juncheng and Hu, Youngmoon and Zhang, Tianyu and Guo, Zhi and Cheng, Meghan and Jin, Xiong and Li, Jian and Dadiomov, Nikita and Williams, Kevin and Ng, Kean},
   booktitle={14th $\{$USENIX$\}$ Symposium on Networked Systems Design and Implementation ($\{$NSDI$\}$ 17)},
   pages={649--667},
   year={2017}
+}
+
+@inproceedings {Hermit,
+author = {Yifan Qiao and Chenxi Wang and Zhenyuan Ruan and Adam Belay and Qingda Lu and Yiying Zhang and Miryung Kim and Guoqing Harry Xu},
+title = {Hermit: {Low-Latency}, {High-Throughput}, and Transparent Remote Memory via {Feedback-Directed} Asynchrony},
+booktitle = {20th USENIX Symposium on Networked Systems Design and Implementation (NSDI 23)},
+year = {2023},
+isbn = {978-1-939133-33-5},
+address = {Boston, MA},
+pages = {181--198},
+url = {https://www.usenix.org/conference/nsdi23/presentation/qiao},
+publisher = {USENIX Association},
+month = apr
+}
+
+
+@article{Redy,
+author = {Zhang, Qizhen and Bernstein, Philip A. and Berger, Daniel S. and Chandramouli, Badrish},
+title = {Redy: remote dynamic memory cache},
+year = {2021},
+issue_date = {December 2021},
+publisher = {VLDB Endowment},
+volume = {15},
+number = {4},
+issn = {2150-8097},
+url = {https://doi.org/10.14778/3503585.3503587},
+doi = {10.14778/3503585.3503587},
+abstract = {Redy is a cloud service that provides high performance caches using RDMA-accessible remote memory. An application can customize the performance of each cache with a service level objective (SLO) for latency and throughput. By using remote memory, it can leverage stranded memory and spot VM instances to reduce the cost of its caches and improve data center resource utilization. Redy automatically customizes the resource configuration for the given SLO, handles the dynamics of remote memory regions, and recovers from failures. The experimental evaluation shows that Redy can deliver its promised performance and robustness under remote memory dynamics in the cloud. We augment a production key-value store, FASTER, with a Redy cache. When the working set exceeds local memory, using Redy is significantly faster than spilling to SSDs.},
+journal = {Proc. VLDB Endow.},
+month = {dec},
+pages = {766–779},
+numpages = {14}
+}
+
+@article{AdvancesAndChallenges,
+author = {Al Maruf, Hasan and Chowdhury, Mosharaf},
+title = {Memory Disaggregation: Advances and Open Challenges},
+year = {2023},
+issue_date = {June 2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {57},
+number = {1},
+issn = {0163-5980},
+url = {https://doi.org/10.1145/3606557.3606562},
+doi = {10.1145/3606557.3606562},
+abstract = {Compute and memory are tightly coupled within each server in traditional datacenters. Large-scale datacenter operators have identified this coupling as a root cause behind fleetwide resource underutilization and increasing Total Cost of Ownership (TCO). With the advent of ultra-fast networks and cache-coherent interfaces, memory disaggregation has emerged as a potential solution, whereby applications can leverage available memory even outside server boundaries.This paper summarizes the growing research landscape of memory disaggregation from a software perspective and introduces the challenges toward making it practical under current and future hardware trends. We also reflect on our seven-year journey in the SymbioticLab to build a comprehensive disaggregated memory system over ultra-fast networks. We conclude with some open challenges toward building next-generation memory disaggregation systems leveraging emerging cache-coherent interconnects.},
+journal = {SIGOPS Oper. Syst. Rev.},
+month = {jun},
+pages = {29–37},
+numpages = {9}
+}
+
+@inproceedings{Fastswap,
+author = {Amaro, Emmanuel and Branner-Augmon, Christopher and Luo, Zhihong and Ousterhout, Amy and Aguilera, Marcos K. and Panda, Aurojit and Ratnasamy, Sylvia and Shenker, Scott},
+title = {Can far memory improve job throughput?},
+year = {2020},
+isbn = {9781450368827},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3342195.3387522},
+doi = {10.1145/3342195.3387522},
+abstract = {As memory requirements grow, and advances in memory technology slow, the availability of sufficient main memory is increasingly the bottleneck in large compute clusters. One solution to this is memory disaggregation, where jobs can remotely access memory on other servers, or far memory. This paper first presents faster swapping mechanisms and a far memory-aware cluster scheduler that make it possible to support far memory at rack scale. Then, it examines the conditions under which this use of far memory can increase job throughput. We find that while far memory is not a panacea, for memory-intensive workloads it can provide performance improvements on the order of 10\% or more even without changing the total amount of memory available.},
+booktitle = {Proceedings of the Fifteenth European Conference on Computer Systems},
+articleno = {14},
+numpages = {16},
+location = {Heraklion, Greece},
+series = {EuroSys '20}
 }
 
 @inproceedings{yang2014don,
