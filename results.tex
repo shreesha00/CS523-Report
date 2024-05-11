@@ -32,21 +32,41 @@ In the following subsections, we present the results of our experiments and disc
     \resizebox{\columnwidth}{!}{%
     \begin{tabular}{lllll}
     \Xhline{2\arrayrulewidth}
-    \textbf{Image} & \textbf{Local Disk} & \textbf{Local Registry} & \textbf{DockerHub} & \textbf{ImageHarbour} \\ \hline
-    hello-world & 130.35 & 150.42 & 1226.20 & 16.60 \\ 
-    alpine & 205.04 & 205.04 & 1528.01 & 88.56 \\ 
-    debian & 1387.90 & 1387.75 & 3167.98 & 1232.25 \\ 
-    pytorch & 46461.74 & 48982.70 & 99647.49 & 41173 \\
+    \textbf{Image} & \textbf{Local Disk (ms)} & \textbf{Local Registry (ms)} & \textbf{DockerHub (ms)} & \textbf{ImageHarbour (ms)} \\ \hline
+    hello-world & 130.35 (8x) & 150.42 (9x) & 1226.20 (74x) & 16.60 \\ 
+    alpine & 205.04 (2.31x) & 205.04 (2.31x) & 1528.01 (17x) & 88.56 \\ 
+    debian & 1387.90 (1.12x) & 1387.75 (1.12x) & 3167.98 (2.5x) & 1232.25 \\ 
+    pytorch & 46461.74 (1.18x) & 48982.70 (1.18x) & 99647.49 (2.4x) & 41173 \\
     \Xhline{2\arrayrulewidth}
     \end{tabular}
     }
-    \caption{Image retrieval times (in milliseconds) for different images}
+    \caption{Image retrieval times (in milliseconds) for different images. The numbers in the bracket for Local Disk, Local Registry, and DockerHub represent the latency slowdown factor as compared to ImageHarbour.}
     \label{tab:image_retrieval_times}
 \end{table}
 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width=0.8\textwidth]{debian_graph.png}
-% \caption{Image retrieval times for Debian image}
-% \label{fig:debian_graph}
-% \end{figure}
+
+\begin{table}[h]
+    \centering
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{lll}
+    \Xhline{2\arrayrulewidth}
+    \textbf{Image} & \textbf{Fetch + Store uncompressed image ($\mu$s)} & \textbf{SCP compressed image ($\mu$s)} \\ \hline
+    hello-world & 61.7055 (0.4\%) & 217564 (3525x) \\
+    alpine  & 6662.96 (7.5\%) & 222916 (33x) \\
+    debian & 97074.9 (7.9\%) & 338438 (3.5x) \\
+    pytorch & 5721700 (14\%) & 8470070 (1.5x) \\
+    \Xhline{2\arrayrulewidth}
+    \end{tabular}
+    }
+    \caption{Table showing the time to just fetch and store the uncompressed image in ImageHarbour (without doing \texttt{docker load}) and time to SCP the compressed image. The numbers in the bracket for fetch and store represent the percentage of the total time taken to fetch and store the image. The numbers in the bracket for SCP represent the latency slowdown factor as compared to fetch and store for ImageHarbour.}
+    \label{tab:scp}
+\end{table}
+
+
+Table \ref{tab:image_retrieval_times} shows the image retreival times for the different workload images. For small images such as hello-world, we observe 8-9x lower latency in ImageHarbour as opposed to using a local disk or a local image registry and 74x lower latency in comparision to using DockerHub to fetch the images. For larger images, such as pytorch, we obtain a 1.18x latency benefit over using a local image repository or disk and a 2.4x latency benefit over using DockerHub. This shows that ImageHarbour performs better or at par with other approaches for image retreival while efficiently utilizing the stranded memory in the cluster instead of dedicated CPU, disk and memory resources.
+
+To better understand these numbers, we also measured the time taken to just fetch and store the \textit{uncompressed} image in ImageHarbour (without doing \texttt{docker load}). Column 2 in Table \ref{tab:scp} shows that the fetch and store time is a small fraction (varying from 0.4 - 14\%) of the total time to retreive the image. This shows that the majority of the latency comes from the \texttt{docker load} operation which hides the latency advantages in fetching and storing the image in ImageHarbour. To demonstrate this, we also measured the time taken to SCP a \textit{compressed} image across two nodes in the same cluster. 
+Since the image is compressed and fetched across a very fast local network, this represents the absolute best case image fetch and store times possible without using ImageHarbour (comparable to using a local registry and better than fetching over the internet). Column 3 in Table \ref{tab:scp} shows that even in the most optimal scenario, this time is significantly larger than the fetch and store time in ImageHarbour (1.5x - 3525x higher latencies). This factor along with the efficient utilization of stranded memory, disk and CPU resources demonstrate the true benefits of using ImageHarbour.  
+
+\subparagraph*{Note on Scalability:} We also conducted scalability experiments to evaluate the performance of ImageHarbour with increasing number of client nodes. We observed minimal to no latency degradation with upto 10 client nodes. The bottleneck in this design is the NIC card on the memory server which serves all the read requests. This bottleneck can be easily avoided by a better design where popular images are duplicated across multiple memory servers and the client nodes are load balanced across these memory servers. 
+
